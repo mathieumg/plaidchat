@@ -88,6 +88,14 @@
 			this.addNotificationListeners();
 			this.resetTeamsLoaded();
 			this.watchTeamsLoaded();
+
+			this.getWindow().addEventListener('contextmenu', this._onContextMenu);
+		},
+		_onContextMenu: function (e) {
+	      e.preventDefault();
+
+	      console.debug('Context menu.' + e.x + ',' + e.y);
+	      this.props.onContextMenu(e, this.props.team.team_url);
 		},
 		_onNotificationUpdate: function () {
 			// When our notification count changes, emit an event for the team with our unread count

@@ -67,6 +67,7 @@
 			var activeTeamId = this.state.activeTeamId;
 			var teams = this.state.teams;
 			var teamIndicies = this.state.teamIndicies;
+			var self = this;
 
 			// Load in our windows
 			return React.DOM.div({
@@ -82,7 +83,8 @@
 					return React.createElement(SlackWindow, {
 						active: team.team_id === activeTeamId,
 						key: teamIndicies[team.team_id],
-						team: team
+						team: team,
+						onContextMenu: self.props.onContextMenu
 					});
 				}))
 			]);

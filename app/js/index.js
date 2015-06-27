@@ -52,6 +52,9 @@
 		isMinimized = false;
 	});
 
+	var linkMenu;
+	var lastUrl = "";
+
 	// Define a global set of controls for `plaidchat`
 	var plaidchat = {
 		// Method to exit our application
@@ -71,8 +74,26 @@
 			// Setup initial team
 			SlackApplication.loadInitialTeams();
 
+			// Make right-click menu.
+			var self = this;
+			linkMenu = new gui.Menu();
+			linkMenu.append(new gui.MenuItem({
+        label: 'Open URL',
+        click: function() {
+          console.debug("Opening url: " + lastUrl);
+          gui.Shell.openExternal(lastUrl);
+        }
+    	}));
+    	linkMenu.append(new gui.MenuItem({
+        label: 'Copy URL',
+        click: function() {
+          console.debug("Copying url: " + lastUrl);
+          gui.Clipboard.get().set(lastUrl);
+        }
+    	}));
+
 			// Render our application
-			var slackApp = React.createElement(SlackApplication, null);
+			var slackApp = React.createElement(SlackApplication, {onContextMenu: this.showRightClickMenu});
 			plaidchat.app = React.render(slackApp, document.body);
 			console.debug('Starting application...');
 		},
@@ -82,6 +103,19 @@
 				width: 400,
 				toolbar: false
 			});
+		},
+		showRightClickMenu: function (e, teamUrl) {
+			console.debug("Showing right-click menu.");
+			var node = e.target;
+
+      if (node.tagName === "A") {
+      	console.debug("link: " + node.attributes[0].nodeValue);
+      	lastUrl = node.attributes[0].nodeValue;
+      	if (lastUrl.charAt(0) === "/") {
+      		lastUrl = teamUrl.substring(0, teamUrl.length - 1) + lastUrl;
+      	}
+      	linkMenu.popup(e.x, e.y);
+      }
 		},
 		// Method to open our dev tools (hooray development :tada:)
 		toggleDevTools: function () {
